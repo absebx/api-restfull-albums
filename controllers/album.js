@@ -31,7 +31,32 @@ function getAlbums(req, res){
   })
 }
 
+function saveAlbum(req, res){
+  var album = new Album(); //instance
+  var params = req.body;
+  album.title = params.title;
+  album.description = params.description;
+  album.save((err, albumStored)=>{
+    if(err){
+      res.status(500).send({message: "Error in petition, album not stored!!"});
+    }else{
+      if(albumStored){
+        res.status(200).send({album: albumStored});
+      }else{
+        res.status(404).send({message: "Album not stored!"});
+      }
+    }
+  });
+}
+
+function updateAlbum(req, res){
+  var albumID = req.params.id; //<-- por url
+  var params = req.body; //<- por el post/put
+  Album.findByIdAndUpdate()
+}
+
 module.exports = {
   getAlbum,
-  getAlbums
+  getAlbums,
+  saveAlbum
 };

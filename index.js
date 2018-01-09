@@ -9,7 +9,6 @@ mongoose.connect('mongodb://localhost:27017/app_albuns', (err, res) => {
     throw err;
   }else{
     console.log("Database working well");
-
     app.listen(port, ()=>{
       console.log('api restfull lisening');
     });
