@@ -28,6 +28,34 @@ function getImage(req,res){
   });
 }
 
+function getImages (req,res){
+  var albumId = req.params.id;
+  if(!albumId){
+    //sacar todas las imagenes
+    var find = Image.find({});
+  }else{
+    //sacar las imagenes de ese album
+    var find = Image.find({album: albumId});
+  }
+  find.sort('-title').exec((err,images)=>{
+    if(err){
+      res.status(500).send({message: "ERROR in petition"});
+    }else{
+      if(!images){
+        res.status(404).send({message: "There are no images"});
+      }else{
+        Album.populate(images,{path: 'album'}, (err, images)=>{
+          if(err){
+            res.status(500).send({message: "ERROR in petition"});
+          }else{
+            res.status(200).send({images});
+          }
+        });
+      }
+    }
+  });
+}
+
 function saveImage(req, res){
   var image = new Image();
   var params = req.body;
@@ -51,5 +79,6 @@ function saveImage(req, res){
 module.exports = {
   test,
   getImage,
+  getImages,
   saveImage
 };

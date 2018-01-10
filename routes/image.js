@@ -7,5 +7,6 @@ var api = express.Router();
 api.get('/image-test', ImageController.test);
 api.get('/image/:id', ImageController.getImage);
 api.post('/image', ImageController.saveImage);
+api.get('/images/:album?', ImageController.getImages);
 
 module.exports = api;
