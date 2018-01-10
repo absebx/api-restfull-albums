@@ -50,13 +50,42 @@ function saveAlbum(req, res){
 }
 
 function updateAlbum(req, res){
-  var albumID = req.params.id; //<-- por url
-  var params = req.body; //<- por el post/put
-  Album.findByIdAndUpdate()
+  var albumId = req.params.id; //<-- por url
+  var update = req.body; //<- por el post/put
+  Album.findByIdAndUpdate(albumId, update, (err,albumUpdated)=>{
+    //trae el objeto antes que se actualizara
+    if(err){
+      res.status(500).send({message: "Error in petition, album not updated!!"});
+    }else{
+      if(!albumUpdated){
+        res.status(404).send({message: "ERROR, album not found!"});
+      }else{
+        res.status(200).send({albumUpdated: albumUpdated});
+      }
+    }
+  });
+}
+
+function deleteAlbum(req, res){
+  var albumId = req.params.id; //<-- por url
+  Album.findByIdAndRemove(albumId, (err,albumDeleted)=>{
+    //trae el objeto antes que se actualizara
+    if(err){
+      res.status(500).send({message: "Error in petition, album not deleted!!"});
+    }else{
+      if(!albumDeleted){
+        res.status(404).send({message: "ERROR, album not found!"});
+      }else{
+        res.status(200).send({album: albumDeleted});
+      }
+    }
+  });
 }
 
 module.exports = {
   getAlbum,
   getAlbums,
-  saveAlbum
+  saveAlbum,
+  updateAlbum,
+  deleteAlbum
 };
