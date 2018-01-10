@@ -1,5 +1,5 @@
 'use strict'
-
+var path = require('path');
 var Image = require('../models/image');
 var Album = require('../models/album');
 
@@ -37,7 +37,7 @@ function getImages (req,res){
     //sacar las imagenes de ese album
     var find = Image.find({album: albumId});
   }
-  find.sort('-title').exec((err,images)=>{
+  find.sort('title').exec((err,images)=>{
     if(err){
       res.status(500).send({message: "ERROR in petition"});
     }else{
@@ -76,9 +76,84 @@ function saveImage(req, res){
   });
 }
 
+function updateImage(req, res){
+  var imageId = req.params.id;
+  var update = req.body;
+  Image.findByIdAndUpdate(imageId, update, (err,imageUpdated)=>{
+    if(err){
+      res.status(500).send({message: "error in petition"});
+    }else{
+      if(!imageUpdated){
+        res.status(404).send({message: "image not found!"});
+      }else{
+        res.status(200).send({image: imageUpdated});
+      }
+    }
+  });
+}
+
+function deleteImage(req,res){
+  var imageId = req.params.id;
+  Image.findByIdAndRemove(imageId, (err,imageDeleted)=>{
+    if(err){
+      res.status(500).send({message: "error in petition"});
+    }else{
+      if(!imageDeleted){
+        res.status(404).send({message: "image not found!"});
+      }else{
+        res.status(200).send({image: imageDeleted});
+      }
+    }
+  })
+}
+
+function uploadImage(req, res){
+  var imageId = req.params.id;
+  var file_name = 'not uploaded';
+  if(req.files){
+    var file_path = req.files.image.path;
+    var file_split = file_path.split('\\');
+    var file_name = file_split[1];
+
+    Image.findByIdAndUpdate(imageId, {picture: file_name}, (err,imageUpdated)=>{
+      if(err){
+        res.status(500).send({message: "error in petition"});
+      }else{
+        if(!imageUpdated){
+          res.status(404).send({message: "image not found!"});
+        }else{
+          res.status(200).send({image: imageUpdated});
+        }
+      }
+    });
+  }else{
+    res.status(200).send({message: "there arent any image"});
+  }
+}
+
+var fs = require('fs');
+function getImageFile(req, res){
+  var imageFile = req.params.imageFile;
+
+  fs.exists('./uploads/'+imageFile, function(exists){
+    if(exists){
+      res.sendFile(path.resolve('./uploads/'+imageFile));
+    }else{
+      res.status(404).send({message: 'file not found'});
+    }
+  });
+
+
+  
+}
+
 module.exports = {
   test,
   getImage,
   getImages,
-  saveImage
+  saveImage,
+  updateImage,
+  deleteImage,
+  uploadImage,
+  getImageFile
 };
