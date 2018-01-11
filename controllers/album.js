@@ -60,7 +60,7 @@ function updateAlbum(req, res){
       if(!albumUpdated){
         res.status(404).send({message: "ERROR, album not found!"});
       }else{
-        res.status(200).send({albumUpdated: albumUpdated});
+        res.status(200).send({album: albumUpdated});
       }
     }
   });
